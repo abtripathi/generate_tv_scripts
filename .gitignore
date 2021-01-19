@@ -1,0 +1,11 @@
+.DS_Store
+data/
+*.ipynb_checkpoints
+*.pth
+*.log
+requirements1.txt
+LICENSE.txt
+images*
+*zh*ipynb*
+__pycache__/
+*.p
