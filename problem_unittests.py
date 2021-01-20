@@ -153,6 +153,7 @@ def test_rnn(RNN, train_on_gpu):
     #b = torch.LongTensor(a)
     b = torch.from_numpy(a)
     hidden = rnn.init_hidden(batch_size)
+     
     
     
     if(train_on_gpu):
@@ -227,3 +228,59 @@ def test_forward_back_prop(RNN, forward_back_prop, train_on_gpu):
     assert type(loss) == float, 'Wrong return type. Expected {}, got {}'.format(float, type(loss))
     
     _print_success_message()
+    
+def test_rnn_gru(RNN, train_on_gpu):
+    
+    batch_size = 50
+    sequence_length = 3
+    vocab_size = 20
+    output_size=20
+    embedding_dim=15
+    hidden_dim = 10
+    n_layers = 2
+    
+    # create test RNN
+    # params: (vocab_size, output_size, embedding_dim, hidden_dim, n_layers)
+    rnn = RNN(vocab_size, output_size, embedding_dim, hidden_dim, n_layers)
+    
+    # create test input
+    a = np.random.randint(vocab_size, size=(batch_size, sequence_length))
+    #b = torch.LongTensor(a)
+    b = torch.from_numpy(a)
+    hidden = rnn.init_hidden(batch_size)
+    
+    
+    if(train_on_gpu):
+        rnn.cuda()
+        b = b.cuda()
+    
+    output, hidden_out = rnn(b, hidden)
+    
+    assert_test = AssertTest({
+                             'Input Size': vocab_size,
+                             'Output Size': output_size,
+                             'Hidden Dim': hidden_dim,
+                             'N Layers': n_layers,
+                             'Batch Size': batch_size,
+                             'Sequence Length': sequence_length,
+                             'Input': b})
+    
+    # initialization
+    correct_hidden_size = (n_layers, batch_size, hidden_dim)
+    assert_condition = hidden.size() == correct_hidden_size
+    assert_message = 'Wrong hidden state size. Expected type {}. Got type {}'.format(correct_hidden_size, hidden.size())
+    assert_test.test(assert_condition, assert_message)
+    
+    # output of rnn
+    correct_hidden_size = (n_layers, batch_size, hidden_dim)
+    assert_condition = hidden_out.size() == correct_hidden_size
+    assert_message = 'Wrong hidden state size. Expected type {}. Got type {}'.format(correct_hidden_size, hidden_out.size())
+    assert_test.test(assert_condition, assert_message)
+    
+    correct_output_size = (batch_size, output_size)
+    assert_condition = output.size() == correct_output_size
+    assert_message = 'Wrong output size. Expected type {}. Got type {}'.format(correct_output_size, output.size())
+    assert_test.test(assert_condition, assert_message)
+    
+    _print_success_message()
+
