@@ -1,7 +1,7 @@
 .DS_Store
 data/
 *.ipynb_checkpoints
-*.pth
+*.pt*
 *.log
 requirements1.txt
 LICENSE.txt
